@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+
+  angular:
+    build: frontend
+    container_name: bookangular
+    ports:
+      - "8181:80"
+    volumes:
+      - ./frontend:/home/app
+  express:
+    build: backend/voter-service
+    container_name: bookexpress
+    ports:
+      - "3200:3200"
+    volumes:
+      - ./backend/voter-service:/home/app
+    # networks:
+    #         - scalable_network
+    # links:
+    #   - database
+
+  database:
+    image: mongo
+    container_name : mongodb
+    environment:
+            - MONGO_INITDB_DATABASE=admin
+            - MONGO_INITDB_ROOT_USERNAME=root
+            - MONGO_INITDB_ROOT_PASSWORD=Root123
+
+    # command: mongod --bind_ip 0.0.0.0
+    ports:
+      - "27017:27017"
+    volumes:
+            - './mongodb/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro'
+            - './mongodb/data:/data/db'
+    # networks:
+    #         - scalable_network
+
+networks:
+    scalable_network:
+        external:
+            name: scalable_network
